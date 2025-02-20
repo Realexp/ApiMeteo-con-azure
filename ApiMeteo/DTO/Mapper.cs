@@ -1,4 +1,7 @@
 ﻿using ApiMeteo.Data;
+using Newtonsoft.Json;
+using System.Net;
+using System.Text.Json.Serialization;
 
 namespace ApiMeteo.DTO
 {
@@ -33,6 +36,16 @@ namespace ApiMeteo.DTO
                 IDCity = city.IDCity,
                 NameCity = city.NameCity,
                 NazionCity = city.NazionCity
+            };
+        }
+        public CleanData completeData(CleanData cleanData, WebClient web,string ApiKey) {
+            string url = string.Format("https://api.openweathermap.org/data/2.5/weather?q={0}&appid={1}", cleanData.CityData, ApiKey);
+            var datas = web.DownloadString(url);
+            var weatherData = JsonConvert.DeserializeObject(datas).ToString();
+            return new CleanData()
+            {
+                CityData = cleanData.CityData,
+                meteoData = weatherData,
             };
         }
     }
